@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20250206140700-1" author="jhipster">
+        <createTable tableName="scrutiny_result">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="election_process_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="scrutiny_day_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="divipol_key" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="party_number" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="candidate_id" type="varchar(20)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="votes" type="integer" defaultValueNumeric="0">
+                <constraints nullable="true"/>
+            </column>
+            <column name="e14_form_id" type="bigint">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="scrutiny_result" indexName="idx_result_divipol">
+            <column name="divipol_key"/>
+        </createIndex>
+
+        <createIndex tableName="scrutiny_result" indexName="idx_result_day">
+            <column name="scrutiny_day_id"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="scrutiny_result"
+            baseColumnNames="election_process_id"
+            constraintName="fk_scrutiny_result_election_process_id"
+            referencedTableName="election_process"
+            referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="scrutiny_result"
+            baseColumnNames="scrutiny_day_id"
+            constraintName="fk_scrutiny_result_scrutiny_day_id"
+            referencedTableName="scrutiny_day"
+            referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="scrutiny_result"
+            baseColumnNames="e14_form_id"
+            constraintName="fk_scrutiny_result_e14_form_id"
+            referencedTableName="e14_form"
+            referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>

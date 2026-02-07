@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20250206140800-1" author="jhipster">
+        <createTable tableName="anomaly">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="election_process_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="severity" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="divipol_key" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="dep_code" type="varchar(5)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="mun_code" type="varchar(5)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="voting_table" type="varchar(5)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="party_number" type="varchar(10)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="candidate_id" type="varchar(20)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="candidate_first_name" type="varchar(100)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="candidate_last_name" type="varchar(100)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="precount_votes" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="scrutiny_votes" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="difference" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="scrutiny_day_id" type="bigint">
+                <constraints nullable="true"/>
+            </column>
+            <column name="description" type="text">
+                <constraints nullable="true"/>
+            </column>
+            <column name="status" type="varchar(20)" defaultValue="NEW">
+                <constraints nullable="true"/>
+            </column>
+            <column name="reviewed_by" type="varchar(50)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="review_date" type="timestamp">
+                <constraints nullable="true"/>
+            </column>
+            <column name="notes" type="text">
+                <constraints nullable="true"/>
+            </column>
+            <column name="detected_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="anomaly" indexName="idx_anomaly_process">
+            <column name="election_process_id"/>
+        </createIndex>
+
+        <createIndex tableName="anomaly" indexName="idx_anomaly_type">
+            <column name="type"/>
+        </createIndex>
+
+        <createIndex tableName="anomaly" indexName="idx_anomaly_status">
+            <column name="status"/>
+        </createIndex>
+
+        <createIndex tableName="anomaly" indexName="idx_anomaly_divipol">
+            <column name="divipol_key"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="anomaly"
+            baseColumnNames="election_process_id"
+            constraintName="fk_anomaly_election_process_id"
+            referencedTableName="election_process"
+            referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="anomaly"
+            baseColumnNames="scrutiny_day_id"
+            constraintName="fk_anomaly_scrutiny_day_id"
+            referencedTableName="scrutiny_day"
+            referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>

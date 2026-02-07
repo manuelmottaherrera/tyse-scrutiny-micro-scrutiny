@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20250206140200-1" author="jhipster">
+        <createTable tableName="e14_form">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="election_process_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pdf_id" type="${uuidType}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="dep_code" type="varchar(5)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mun_code" type="varchar(5)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zone" type="varchar(5)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="station" type="varchar(5)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voting_table" type="varchar(5)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="divipol_key" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_voters" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="total_ballot_box_votes" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="total_incinerated" type="varchar(10)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="pages_received" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="total_pages" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="is_complete" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="true"/>
+            </column>
+            <column name="scrutiny_day_id" type="bigint">
+                <constraints nullable="true"/>
+            </column>
+            <column name="ocr_confidence" type="decimal(5,4)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="processed_at" type="timestamp">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="e14_form"
+            columnNames="election_process_id, divipol_key, scrutiny_day_id"
+            constraintName="ux_e14_form_process_divipol_day"/>
+
+        <createIndex tableName="e14_form" indexName="idx_e14_divipol">
+            <column name="divipol_key"/>
+        </createIndex>
+
+        <createIndex tableName="e14_form" indexName="idx_e14_process">
+            <column name="election_process_id"/>
+        </createIndex>
+
+        <createIndex tableName="e14_form" indexName="idx_e14_dep_mun">
+            <column name="dep_code"/>
+            <column name="mun_code"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="e14_form"
+            baseColumnNames="election_process_id"
+            constraintName="fk_e14_form_election_process_id"
+            referencedTableName="election_process"
+            referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="e14_form"
+            baseColumnNames="scrutiny_day_id"
+            constraintName="fk_e14_form_scrutiny_day_id"
+            referencedTableName="scrutiny_day"
+            referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>

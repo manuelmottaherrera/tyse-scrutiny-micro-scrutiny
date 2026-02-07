@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20250206140500-1" author="jhipster">
+        <createTable tableName="precount">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="election_process_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="dep_code" type="varchar(5)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mun_code" type="varchar(5)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zone" type="varchar(5)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="station" type="varchar(5)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voting_table" type="varchar(5)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="divipol_key" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_voters" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="total_ballot_box_votes" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="imported_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="precount"
+            columnNames="election_process_id, divipol_key"
+            constraintName="ux_precount_process_divipol"/>
+
+        <createIndex tableName="precount" indexName="idx_precount_divipol">
+            <column name="divipol_key"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="precount"
+            baseColumnNames="election_process_id"
+            constraintName="fk_precount_election_process_id"
+            referencedTableName="election_process"
+            referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <property name="now" value="current_timestamp" dbms="postgresql"/>
+    <property name="floatType" value="float4" dbms="postgresql"/>
+    <property name="clobType" value="clob" dbms="postgresql"/>
+    <property name="blobType" value="bytea" dbms="postgresql"/>
+    <property name="uuidType" value="uuid" dbms="postgresql"/>
+    <property name="datetimeType" value="datetime" dbms="postgresql"/>
+    <property name="timeType" value="time(6)" dbms="postgresql"/>
+
+    <include file="config/liquibase/changelog/00000000000000_initial_schema.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250206140000_added_entity_ElectionProcess.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250206140100_added_entity_ScrutinyDay.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250206140200_added_entity_E14Form.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250206140300_added_entity_E14Party.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250206140400_added_entity_E14Candidate.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250206140500_added_entity_Precount.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250206140600_added_entity_PrecountCandidate.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250206140700_added_entity_ScrutinyResult.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250206140800_added_entity_Anomaly.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250206140900_added_entity_ProcessedDocument.xml" relativeToChangelogFile="false"/>
+    <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
+    <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
+    <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
+</databaseChangeLog>

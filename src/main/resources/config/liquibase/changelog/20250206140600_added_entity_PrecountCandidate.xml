@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20250206140600-1" author="jhipster">
+        <createTable tableName="precount_candidate">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="precount_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="party_number" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="party_name" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="candidate_id" type="varchar(20)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="candidate_code" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="ballot_position" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="first_name" type="varchar(100)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="last_name" type="varchar(100)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="votes" type="integer" defaultValueNumeric="0">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="precount_candidate"
+            baseColumnNames="precount_id"
+            constraintName="fk_precount_candidate_precount_id"
+            referencedTableName="precount"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>

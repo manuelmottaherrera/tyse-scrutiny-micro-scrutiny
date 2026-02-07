@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20250206140400-1" author="jhipster">
+        <createTable tableName="e14_candidate">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="e14_party_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="candidate_id" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="votes" type="integer" defaultValueNumeric="0">
+                <constraints nullable="true"/>
+            </column>
+            <column name="needs_audit" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="e14_candidate"
+            baseColumnNames="e14_party_id"
+            constraintName="fk_e14_candidate_e14_party_id"
+            referencedTableName="e14_party"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>

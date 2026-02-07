@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20250206140100-1" author="jhipster">
+        <createTable tableName="scrutiny_day">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="election_process_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="day_number" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="label" type="varchar(100)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="scrutiny_day"
+            columnNames="election_process_id, date"
+            constraintName="ux_scrutiny_day_process_date"/>
+
+        <addForeignKeyConstraint baseTableName="scrutiny_day"
+            baseColumnNames="election_process_id"
+            constraintName="fk_scrutiny_day_election_process_id"
+            referencedTableName="election_process"
+            referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>

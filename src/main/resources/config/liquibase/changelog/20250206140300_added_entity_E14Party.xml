@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20250206140300-1" author="jhipster">
+        <createTable tableName="e14_party">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="e14_form_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="party_number" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="party_name" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="vote_type" type="varchar(50)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="party_only_votes" type="integer" defaultValueNumeric="0">
+                <constraints nullable="true"/>
+            </column>
+            <column name="total_party_candidate_votes" type="integer" defaultValueNumeric="0">
+                <constraints nullable="true"/>
+            </column>
+            <column name="needs_audit" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="e14_party"
+            baseColumnNames="e14_form_id"
+            constraintName="fk_e14_party_e14_form_id"
+            referencedTableName="e14_form"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>
