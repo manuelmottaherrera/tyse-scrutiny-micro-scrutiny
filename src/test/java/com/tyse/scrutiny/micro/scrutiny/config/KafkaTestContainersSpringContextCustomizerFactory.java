@@ -28,7 +28,17 @@ public class KafkaTestContainersSpringContextCustomizerFactory implements Contex
                 EmbeddedKafka kafkaAnnotation = AnnotatedElementUtils.findMergedAnnotation(testClass, EmbeddedKafka.class);
                 if (null != kafkaAnnotation) {
                     log.debug("detected the EmbeddedKafka annotation on class {}", testClass.getName());
-                    log.info("Warming up the kafka broker");
+
+                    // Check if external Kafka is configured via environment variables
+                    String externalKafkaBrokers = System.getenv("SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS");
+                    if (externalKafkaBrokers != null && !externalKafkaBrokers.isEmpty()) {
+                        log.info("Using external Kafka broker from environment: {}", externalKafkaBrokers);
+                        // External services are configured via environment variables,
+                        // Spring Boot will pick them up automatically
+                        return;
+                    }
+
+                    log.info("Warming up the kafka broker with Testcontainers");
                     if (null == kafkaBean) {
                         kafkaBean = beanFactory.createBean(KafkaTestContainer.class);
                         beanFactory.registerSingleton(KafkaTestContainer.class.getName(), kafkaBean);

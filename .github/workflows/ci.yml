@@ -108,6 +108,36 @@ jobs:
     needs: [liquibase-verification]
     timeout-minutes: 20
 
+    services:
+      postgresql:
+        image: postgres:17.4
+        env:
+          POSTGRES_DB: tyseScrutinyMicroScrutiny
+          POSTGRES_USER: tyseScrutinyMicroScrutiny
+          POSTGRES_PASSWORD: ''
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      kafka:
+        image: apache/kafka-native:4.0.0
+        ports:
+          - 9092:9092
+        env:
+          KAFKA_NODE_ID: 1
+          KAFKA_PROCESS_ROLES: broker,controller
+          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+          KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://localhost:9093
+          KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+          KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+          KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+          KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -128,8 +158,12 @@ jobs:
 
       - name: Run Backend Tests
         env:
-          # Fix Testcontainers hostname resolution in GitHub Actions
-          TESTCONTAINERS_HOST_OVERRIDE: localhost
+          # Use external services instead of Testcontainers
+          SPRING_R2DBC_URL: r2dbc:postgresql://localhost:5434/tyseScrutinyMicroScrutiny
+          SPRING_R2DBC_USERNAME: tyseScrutinyMicroScrutiny
+          SPRING_R2DBC_PASSWORD: ''
+          SPRING_LIQUIBASE_URL: jdbc:postgresql://localhost:5434/tyseScrutinyMicroScrutiny
+          SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: localhost:9092
         run: |
           chmod +x mvnw
           ./mvnw clean verify \

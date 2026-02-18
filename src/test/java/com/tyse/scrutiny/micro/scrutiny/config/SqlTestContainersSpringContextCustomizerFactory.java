@@ -28,7 +28,17 @@ public class SqlTestContainersSpringContextCustomizerFactory implements ContextC
                 EmbeddedSQL sqlAnnotation = AnnotatedElementUtils.findMergedAnnotation(testClass, EmbeddedSQL.class);
                 if (null != sqlAnnotation) {
                     log.debug("detected the EmbeddedSQL annotation on class {}", testClass.getName());
-                    log.info("Warming up the sql database");
+
+                    // Check if external PostgreSQL is configured via environment variables
+                    String externalR2dbcUrl = System.getenv("SPRING_R2DBC_URL");
+                    if (externalR2dbcUrl != null && !externalR2dbcUrl.isEmpty()) {
+                        log.info("Using external PostgreSQL from environment: {}", externalR2dbcUrl);
+                        // External services are configured via environment variables,
+                        // Spring Boot will pick them up automatically
+                        return;
+                    }
+
+                    log.info("Warming up the sql database with Testcontainers");
                     if (null == prodTestContainer) {
                         try {
                             Class<? extends SqlTestContainer> containerClass = (Class<? extends SqlTestContainer>) Class.forName(
