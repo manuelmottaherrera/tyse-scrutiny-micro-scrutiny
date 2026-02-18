@@ -6,6 +6,11 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
                         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
+    <!-- Tag para CI: representa el estado vacío de la base de datos -->
+    <changeSet author="jhipster" id="00000000000000">
+        <tagDatabase tag="estado-vacio"/>
+    </changeSet>
+
     <!--
         JHipster core tables.
         The initial schema has the '00000000000001' id, so that it is over-written if we re-generate it.

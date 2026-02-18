@@ -254,11 +254,8 @@ echo ""
 echo -e "${YELLOW}[Job 2/${TOTAL_JOBS}] Starting Code Quality Checks...${NC}"
 QUALITY_START=$(date +%s)
 
-echo "  → Running Prettier format check..."
-npm run prettier:check
-
-echo "  → Running nohttp check (detecting http:// URLs)..."
-npm run backend:nohttp:test
+echo "  → Running Checkstyle validation..."
+./mvnw -ntp checkstyle:check --batch-mode
 
 QUALITY_END=$(date +%s)
 QUALITY_TIME=$((QUALITY_END - QUALITY_START))

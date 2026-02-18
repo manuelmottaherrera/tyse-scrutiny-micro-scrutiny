@@ -8,12 +8,12 @@ on:
 
 env:
   JAVA_VERSION: '17'
-  NODE_VERSION: '22.15.0'
 
 jobs:
   # ============================================================================
   # Job 1: Code Quality
-  # Verifica formatting y reglas de código (se ejecuta primero, fail fast)
+  # Verifica reglas de código (checkstyle) - se ejecuta primero, fail fast
+  # Nota: Este microservicio es solo backend Java, no requiere npm/Node.js
   # ============================================================================
   code-quality:
     name: Code Quality
@@ -24,12 +24,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
       - name: Set up JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v4
         with:
@@ -37,14 +31,10 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Install Node dependencies
-        run: npm ci
-
-      - name: Check Prettier formatting
-        run: npm run prettier:check
-
-      - name: Check nohttp (detect http:// URLs)
-        run: npm run backend:nohttp:test
+      - name: Run Checkstyle
+        run: |
+          chmod +x mvnw
+          ./mvnw -ntp checkstyle:check --batch-mode
 
   # ============================================================================
   # Job 2: Liquibase Verification
