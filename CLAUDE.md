@@ -56,11 +56,11 @@ docker compose -f src/main/docker/postgresql.yml down -v
 
 ### Required Services
 
-**IMPORTANTE**: Este microservicio depende de servicios compartidos que se levantan desde `tyse-infrastructure/`.
+**IMPORTANTE**: Este microservicio depende de servicios compartidos que se levantan desde `tyse-scrutiny-infrastructure/`.
 
 ```bash
 # 1. Levantar infraestructura compartida (una sola vez)
-cd ../tyse-infrastructure
+cd ../tyse-scrutiny-infrastructure
 docker compose up -d
 
 # Verificar:
@@ -108,7 +108,7 @@ npm run java:docker:arm64
 ### Microservice in Context
 
 ```
-tyse-infrastructure/:
+tyse-scrutiny-infrastructure/:
 ├── Consul (localhost:8500)         ← Service discovery
 ├── Kafka (localhost:9092)          ← Message broker
 ├── MinIO (localhost:9000/9001)     ← Object storage
