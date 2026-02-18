@@ -25,7 +25,6 @@ public class KafkaTestContainer implements InitializingBean, DisposableBean {
         if (null == kafkaContainer) {
             kafkaContainer = new KafkaContainer(DockerImageName.parse("apache/kafka-native:4.0.0"))
                 .withLogConsumer(new Slf4jLogConsumer(LOG))
-                .withEnv("KAFKA_LISTENERS", "PLAINTEXT://:9092,BROKER://:9093,CONTROLLER://:9094")
                 .withReuse(true);
         }
         if (!kafkaContainer.isRunning()) {
