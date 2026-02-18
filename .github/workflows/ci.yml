@@ -1,0 +1,190 @@
+name: Scrutiny - CI Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  JAVA_VERSION: '17'
+  NODE_VERSION: '22.15.0'
+
+jobs:
+  # ============================================================================
+  # Job 1: Code Quality
+  # Verifica formatting y reglas de código (se ejecuta primero, fail fast)
+  # ============================================================================
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Check Prettier formatting
+        run: npm run prettier:check
+
+      - name: Check nohttp (detect http:// URLs)
+        run: npm run backend:nohttp:test
+
+  # ============================================================================
+  # Job 2: Liquibase Verification
+  # Verifica que las migraciones funcionan correctamente (update → rollback → update)
+  # Solo se ejecuta si Code Quality pasa (fail fast)
+  # ============================================================================
+  liquibase-verification:
+    name: Liquibase Verification
+    runs-on: ubuntu-latest
+    needs: [code-quality]
+    timeout-minutes: 10
+
+    services:
+      postgresql:
+        image: postgres:17.4
+        env:
+          POSTGRES_DB: tyseScrutinyMicroScrutiny
+          POSTGRES_USER: tyseScrutinyMicroScrutiny
+          POSTGRES_PASSWORD: ''
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Compile project
+        run: |
+          chmod +x mvnw
+          ./mvnw compile -DskipTests -q
+
+      - name: Step 1 - Apply all changesets
+        run: |
+          ./mvnw liquibase:update \
+            -Dlogging.level.ROOT=ERROR \
+            -Dlogging.level.liquibase=INFO
+
+      - name: Step 2 - Rollback to initial state
+        run: |
+          ./mvnw liquibase:rollback -Dliquibase.rollbackTag=estado-vacio \
+            -Dlogging.level.ROOT=ERROR \
+            -Dlogging.level.liquibase=INFO
+
+      - name: Step 3 - Re-apply all changesets
+        run: |
+          ./mvnw liquibase:update \
+            -Dlogging.level.ROOT=ERROR \
+            -Dlogging.level.liquibase=INFO
+
+  # ============================================================================
+  # Job 3: Backend Tests
+  # Ejecuta unit tests, integration tests y Cucumber BDD tests
+  # Solo se ejecuta si Liquibase Verification pasa (fail fast)
+  # ============================================================================
+  backend-tests:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    needs: [liquibase-verification]
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-scrutiny-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2-scrutiny
+
+      - name: Run Backend Tests
+        env:
+          # Fix Testcontainers hostname resolution in GitHub Actions
+          TESTCONTAINERS_HOST_OVERRIDE: localhost
+        run: |
+          chmod +x mvnw
+          ./mvnw clean verify \
+            -Dlogging.level.ROOT=ERROR \
+            -Dlogging.level.tech.jhipster=ERROR \
+            -Dlogging.level.com.tyse.scrutiny=ERROR
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scrutiny-backend-test-results
+          path: target/surefire-reports/
+          retention-days: 7
+
+      - name: Upload Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scrutiny-backend-coverage
+          path: target/site/jacoco/
+          retention-days: 7
+
+  # ============================================================================
+  # Quality Gate
+  # Verifica que todos los jobs pasaron
+  # ============================================================================
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    needs: [code-quality, liquibase-verification, backend-tests]
+    if: always()
+
+    steps:
+      - name: Check all job results
+        run: |
+          echo "Code Quality: ${{ needs.code-quality.result }}"
+          echo "Liquibase Verification: ${{ needs.liquibase-verification.result }}"
+          echo "Backend Tests: ${{ needs.backend-tests.result }}"
+
+          if [ "${{ needs.code-quality.result }}" != "success" ] || \
+             [ "${{ needs.liquibase-verification.result }}" != "success" ] || \
+             [ "${{ needs.backend-tests.result }}" != "success" ]; then
+            echo "❌ CI Pipeline Failed - One or more jobs failed"
+            exit 1
+          fi
+
+          echo "✅ CI Pipeline Passed - All jobs successful"
